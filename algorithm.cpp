@@ -116,11 +116,9 @@ void kuaipai(int array[],int low,int hight)
 } 
 
 
-//chain
+//chain###########################################################################
 //    操作系统 win 8.1
 //    编译环境 Visual Stuido 2017
-
-
 typedef int ElementType;        //    定义数据类型,可根据需要进行其他类型定义
                                 //    链表节点的定义
 typedef struct ListNode {
@@ -144,39 +142,41 @@ PNode CreateList(void) {
     PNode PHead = (PNode)malloc(sizeof(Node));    //    创建分配一个头节点内存空间
     if (PHead == NULL)    //    判断是否分配成功
     {
-        printf("空间分配失败 \n");
+        printf("malloc fail!\n");
         exit(-1);
     }
 
     PNode PTail = PHead;    //    链表的末尾节点，初始指向头节点
     PTail->Next = NULL;    //    最后一个节点指针置为空
-    printf("请输入节点个数：");
+    printf("Input node num:");
     scanf("%d", &len);        //    输入节点个数
     for (int i = 0; i < len; i++) {
 
         PNode PNew = (PNode)malloc(sizeof(Node));    //    分配一个新节点
         if (PNew == NULL) {
-            printf("分配新节点失败\n");
+            printf("malloc node fail\n");
             exit(-1);
         }
-        printf("请输入第 %d 个节点的数据：", i + 1);
+        printf("Input node:%d data:", i + 1);
         scanf("%d", &val);    //    输入链表节点的数据
 
         PNew->Element = val;    //    把数据赋值给节点数据域
+
         PTail->Next = PNew;    //    末尾节点指针指向下一个新节点
         PNew->Next = NULL;        //    新节点指针指向为空
+        
         PTail = PNew;    //    将新节点复制给末尾节点        
     }
-    printf("创建链表成功\n");
+    printf("Create chain sucess!\n");
     return PHead;    //    返回头节点
 }
 
 //    定义链表遍历函数
 void TraverseList(PNode List) {
     PNode P = List->Next;    //    首节点赋值给临时节点P
-    printf("遍历链表的值为：");
+    printf("traver list:");
     if (P == NULL)
-        printf("链表为空");
+        printf("list empty!");
     while (P != NULL)        //当临时节点P不为尾节点时，输出当前节点值 
     {
         printf("%d ", P->Element);
@@ -190,16 +190,16 @@ PNode FindList(PNode List) {
     PNode P = List->Next;    //    定义临时指针P指向首节点的地址
     int num = 0;    //    用于记录链表节点位置
     int val = 0;    //    用于存放要查询的值
-    printf("请输入要查询的数：");
+    printf("Input  serach data:");
     scanf("%d", &val);    //    输入要查询的数值
     while (P != NULL&&P->Element != val) {
         P = P->Next;
         ++num;
     }
     if (P != NULL)
-        printf("找到的节点为：%d", num + 1);
+        printf("Find node:%d", num + 1);
     else
-        printf("找不到该节点");
+        printf("Find node fail!");
     printf("\n");
     return P;
 }
@@ -217,7 +217,7 @@ void InsertList(PNode List, int pos, int val) {
     PNode Tmp = (PNode)malloc(sizeof(Node));    //    分配一个临时节点用来存储要插入的数据
     if (Tmp == NULL)
     {
-        printf("内存分配失败！");
+        printf("Insert malloc fail!");
         exit(-1);
     }
     //    插入节点
@@ -236,7 +236,7 @@ void DeleteTheList(PNode List) {
         free(P);    //释放指针P指向的节点
         P = Tmp;    //重新赋值
     }
-    printf("删除链表成功！\n");
+    printf("Delete list success!\n");
 }
 //    定义删除链表元素函数
 //    删除链表中的第pos节点
