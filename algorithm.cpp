@@ -6,6 +6,7 @@
 #include <malloc.h>
 #include <stdlib.h>
 
+#include <string.h>
 //famous elf hash algorithm
 unsigned int ELFhash(char *str)  
 {  
@@ -114,6 +115,203 @@ void kuaipai(int array[],int low,int hight)
         kuaipai(array,i+1,hight);  
     }  
 } 
+
+
+
+
+//节点结构体，每个节点分别保存了一个指向前一个节点的指针和指向后一个节点的指针，以及保存数据的指针
+struct _node{
+    struct _node *prevNode;
+    struct _node *nextNode;
+    void *data;
+};
+
+
+//链表结构体，记录了链表的首节点和尾节点指针，以及节点总个数
+struct _list{
+    struct _node *firstNode;
+    struct _node *lastNode;
+    int len;
+};
+
+
+// 头部加入节点
+void lpush(struct _list *list, void *data)
+{
+    struct _node *node = (struct _node*)malloc(sizeof(struct _node));
+    memset(node,0, sizeof(struct _node));
+    node->data = data;
+
+    //1 connect node with first
+    node->nextNode = list->firstNode;
+
+    //
+    if (list->firstNode != NULL)
+    {
+        list->firstNode->prevNode = node;
+    }
+
+    //2  reset fist node  and last node if null
+    list->firstNode = node;
+    if (list->len == 0)
+    {
+        list->lastNode = node;
+    }
+    list->len++;
+}
+
+
+// 尾部加入节点
+void rpush(struct _list *list, void *data)
+{
+    struct _node *node = (struct _node*)malloc(sizeof(struct _node));
+    memset(node,0, sizeof(struct _node));
+    node->data = data;
+
+    //1 conect with last
+    node->prevNode = list->lastNode;
+    if (list->lastNode != NULL)
+    {
+        list->lastNode->nextNode = node;
+    }
+
+    //reset last
+    list->lastNode = node;
+
+    if (list->len == 0)
+    {
+        list->firstNode = node;
+    }
+    list->len++;
+}
+
+
+// 头部弹出节点
+void lpop(struct _list *list)
+{
+    if (list->firstNode == NULL)
+    {
+        return;
+    }
+
+
+    if (list->firstNode->nextNode != NULL)
+    {
+        //move first
+        list->firstNode = list->firstNode->nextNode;
+        //kill node
+        free(list->firstNode->prevNode);
+        list->firstNode->prevNode = NULL;
+    }
+    else
+    {
+        free(list->firstNode);
+        list->firstNode = NULL;
+    }
+
+
+    list->len--;
+
+
+    if (list->len == 0)
+    {
+        list->lastNode = NULL;
+    }
+}
+
+
+
+
+// 尾部弹出节点
+void rpop(struct _list *list)
+{
+    if (list->lastNode == NULL)
+    {
+        return;
+    }
+
+
+    if (list->lastNode->prevNode != NULL)
+    {
+        //1 tail move
+        list->lastNode = list->lastNode->prevNode;
+        //2 kill node
+        free(list->lastNode->nextNode);
+        list->lastNode->nextNode = NULL;
+    }
+    else
+    {
+        free(list->lastNode);
+        list->lastNode = NULL;
+    }
+
+
+    list->len--;
+    if (list->len == 0)
+    {
+        list->firstNode = NULL;
+    }
+}
+
+
+// 获取指定位置上的节点值
+void *getVal(struct _list list, int pos)
+{
+    if (pos < 0)
+    {
+        return NULL;
+    }
+
+
+    int i;
+    struct _node *curNode = list.firstNode;
+    for(i = 0; i < pos; i++)
+    {
+        if(curNode->nextNode != NULL)
+        {
+            curNode =  curNode->nextNode;
+        }
+        else
+        {
+            curNode = NULL;
+            break;
+        }
+    }
+
+
+    if (curNode == NULL){
+        return NULL;
+    }
+    return curNode->data;
+}
+
+
+
+
+
+
+static void print_r(struct _list list)
+{
+    printf("-----------------------------------------\n");
+    printf("list.len = %d\n", list.len);
+    int i = 0;
+    struct _node *node = list.firstNode;
+    while(1)
+    {
+        if (node == NULL)
+        {
+            break;
+        }
+
+
+        printf("list[%d]: %s\n", i, node->data);
+        node = node->nextNode;
+        i++;
+    }
+}
+
+
+
 
 
 //chain###########################################################################
@@ -298,5 +496,35 @@ int main()
     DeleteTheList(List);    //    删除整个链表
     TraverseList(List);
 
-    return 1;
+
+
+    //test double chain
+     struct _list list = {NULL, NULL, 0};
+
+
+    lpush(&list, (void*)"node 0");
+    lpush(&list, (void*)"node 1");
+    lpush(&list, (void*)"node 2");
+    rpush(&list, (void*)"node 3");
+    rpush(&list, (void*)"node 4");
+    print_r(list);
+
+
+    lpop(&list);
+    rpop(&list);
+    print_r(list);
+
+
+    lpop(&list);
+    lpop(&list);
+    lpop(&list);
+    rpop(&list);
+    rpop(&list);
+    print_r(list);
+
+
+    rpush(&list, (void*)"hello node");
+    print_r(list);
+
+   return 1;
 }
